@@ -27,7 +27,7 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
-    Testing = True
+    TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URI') \
         or 'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
 
