@@ -1,0 +1,12 @@
+Hi {{ user.username }},
+
+Welcome!
+
+Please click the following link to confirm:
+
+{{ url_for('auth.confirm', token=token, _external=True) }}
+
+Pls do not reply.
+
+Thanks,
+ADMIN
