@@ -1,2 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Flask Blog - Confirm your account {% endblock %}
+
+{% block page_content %}
+
 You have not confirmed your email.
-<a href="/confirm">Resend confirmation </a>
+<a href="{{ url_for('auth.resend_confirmation') }}">Resend confirmation </a>
+
+{% endblock %}
