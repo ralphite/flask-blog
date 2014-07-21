@@ -76,6 +76,7 @@ def unconfirmed():
 @login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token()
-    send_email('auth/email/confirm', 'Confirm your account', user=current_user, token=token)
+    send_email(current_user.email, 'Confirm your account',
+               'auth/email/confirm', user=current_user, token=token)
     flash('New confirmation email has been sent.')
     return redirect(url_for('main.index'))
