@@ -75,7 +75,7 @@ class User(UserMixin, db.Model):
         return s.dumps({'change_email': self.id, 'new_email': new_email})
 
     def change_email(self, token):
-        s = Serializer(current_app.config['SECRECT_KEY'])
+        s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
         except:
