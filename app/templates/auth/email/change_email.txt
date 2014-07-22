@@ -1,0 +1,3 @@
+Click here to change email
+
+url_for('auth.change_email', token=token, _external=True)
