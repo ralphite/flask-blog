@@ -3,10 +3,11 @@ from flask import render_template, session, redirect, url_for, current_app, abor
 from flask_login import login_required, current_user
 
 from .. import db
-from ..models import User
+from ..models import User, Role
 from ..email import send_email
 from . import main
-from .forms import NameForm, EditProfileForm
+from .forms import NameForm, EditProfileForm, EditProfileAdminForm
+from ..decorators import admin_required
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -52,3 +53,30 @@ def edit_profile():
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', form=form)
+
+
+@main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_profile_admin(id):
+    u = User.query.get_or_404(id)
+    form = EditProfileAdminForm()
+    if form.validate_on_submit():
+        u.email = form.email.data
+        u.username = form.username.data
+        u.confirmed = form.confirmed.data
+        u.role = Role.query.get(form.role.data)
+        u.name = form.name.data
+        u.location = form.location.data
+        u.about_me = form.about_me.data
+        db.session.add(u)
+        flash('Profile updated')
+        return redirect(url_for('.user', username=u.username))
+    form.email.data = u.email
+    form.username.data = u.username
+    form.confirmed.data = u.confirmed
+    form.role.data = u.role_id
+    form.name.data = u.name
+    form.location.data = u.location
+    form.about_me.data = u.about_me
+    return render_template('edit_profile.html', form=form, user=u)
