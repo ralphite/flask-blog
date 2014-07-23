@@ -49,5 +49,5 @@ class EditProfileAdminForm(Form):
 
 
 class PostForm(Form):
-    body = TextAreaField('内容', validators=[DataRequired()])
+    body = TextAreaField("Don't even think about it.", validators=[DataRequired()])
     submit = SubmitField('Submit')
