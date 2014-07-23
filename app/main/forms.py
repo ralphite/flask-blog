@@ -44,3 +44,8 @@ class EditProfileAdminForm(Form):
     def validate_username(self, field):
         if field.data != self.user.username and User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already taken.')
+
+
+class PostForm(Form):
+    body = TextAreaField('内容', validators=[DataRequired()])
+    submit = SubmitField('Submit')
