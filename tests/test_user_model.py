@@ -2,8 +2,7 @@ import unittest
 import time
 
 from app import create_app, db
-from app.models import User, Role, Permission, AnonymousUser
-
+from app.models import User, Role, Permission, AnonymousUser, current_app
 
 class UserModelTestCase(unittest.TestCase):
     def setUp(self):
@@ -111,6 +110,11 @@ class UserModelTestCase(unittest.TestCase):
         u = User(email='j@e.com', password='cat')
         self.assertTrue(u.can(Permission.WRITE_ARTICLES))
         self.assertFalse(u.can(Permission.MODERATE_COMMENTS))
+
+    def test_admin_user(self):
+        u = User(email=current_app.config['FLASK_BLOG_ADMIN'], password='admin')
+        self.assertTrue(u.is_administrator())
+        self.assertTrue(u.can(Permission.ADMINISTER))
 
     def test_anonymous_user(self):
         u = AnonymousUser()

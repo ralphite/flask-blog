@@ -26,6 +26,9 @@ class Role(db.Model):
     permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
 
+    def __init__(self):
+        Role.insert_roles()
+
     @staticmethod
     def insert_roles():
         roles = {
@@ -33,7 +36,7 @@ class Role(db.Model):
                      Permission.WRITE_ARTICLES, True),
             'Moderator': (Permission.FOLLOW | Permission.COMMENT | \
                           Permission.WRITE_ARTICLES | Permission.MODERATE_COMMENTS, False),
-            'Administrator': (0xFF, False)
+            'Administrator': (0xff, False)
         }
         for r in roles:
             role = Role.query.filter_by(name=r).first()
@@ -76,7 +79,7 @@ class User(UserMixin, db.Model):
         super(User, self).__init__(**kwargs)
         if self.role is None:
             if self.email == current_app.config['FLASK_BLOG_ADMIN']:
-                self.role = Role.query.filter_by(permissions=0xFF).first()
+                self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
         if self.email is not None and self.avatar_hash is None:
