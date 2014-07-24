@@ -41,9 +41,6 @@ class Role(db.Model):
     permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
 
-    def __init__(self):
-        Role.insert_roles()
-
     @staticmethod
     def insert_roles():
         roles = {

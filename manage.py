@@ -28,5 +28,19 @@ def test():
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 
+@manager.command
+def recreate_data():
+    db.drop_all()
+    db.create_all()
+    Role.insert_roles()
+    u=User(username='ralph', email='ralph.wen@gmail.com', password='r',
+           name='Ralph Wen', location='Hangzhou, China',
+           about_me='This is the creator of everything', confirmed=True)
+    db.session.add(u)
+    db.session.commit()
+    User.generate_fake(50)
+    Post.generate_fake(500)
+
+
 if __name__ == '__main__':
     manager.run()
