@@ -33,7 +33,7 @@ def recreate_data():
     db.drop_all()
     db.create_all()
     Role.insert_roles()
-    u=User(username='ralph', email='ralph.wen@gmail.com', password='r',
+    u = User(username='ralph', email='ralph.wen@gmail.com', password='r',
            name='Ralph Wen', location='Hangzhou, China',
            about_me='This is the creator of everything', confirmed=True)
     db.session.add(u)
