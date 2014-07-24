@@ -78,7 +78,23 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form, user=u)
 
 
-@main.route('/post/<int:id>')
-def post(id):
-    p = Post.query.get_or_404(id)
+@main.route('/post/<int:post_id>')
+def post(post_id):
+    p = Post.query.get_or_404(post_id)
     return render_template('post.html', posts=[p])
+
+
+@main.route('/edit-post/<int:post_id>', methods=["GET", "POST"])
+@login_required
+def edit_post(post_id):
+    p = Post.query.get_or_404(post_id)
+    if current_user != p.author and not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        p.body = form.body.data
+        db.session.add(p)
+        flash('The post has been updated.')
+        return redirect('/post/'+str(p.id))
+    form.body.data = p.body
+    return render_template('edit_post.html', form=form)

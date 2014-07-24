@@ -33,10 +33,14 @@ def recreate_data():
     db.drop_all()
     db.create_all()
     Role.insert_roles()
-    u = User(username='ralph', email='ralph.wen@gmail.com', password='r',
-           name='Ralph Wen', location='Hangzhou, China',
-           about_me='This is the creator of everything', confirmed=True)
-    db.session.add(u)
+    u1 = User(username='ralph', email='ralph.wen@gmail.com', password='r',
+              name='Ralph Wen', location='Hangzhou, China',
+              about_me='This is the creator of everything', confirmed=True)
+    db.session.add(u1)
+    u2 = User(username='yadong', email='wenyadong@gmail.com', password='r',
+              name='Yadong Wen', location='Hangzhou, China',
+              about_me='Yeah', confirmed=True)
+    db.session.add(u2)
     db.session.commit()
     User.generate_fake(50)
     Post.generate_fake(500)
