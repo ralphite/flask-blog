@@ -7,6 +7,7 @@ Flask-Moment==0.3.3
 Flask-SQLAlchemy==1.0
 Flask-Script==2.0.5
 Flask-WTF==0.10.0
+ForgeryPy==0.1
 Jinja2==2.7.3
 Mako==1.0.0
 MarkupSafe==0.23
