@@ -34,7 +34,7 @@
         {% if current_user.is_authenticated() %}
         <li
         {% if show_followed %} class="active"{% endif %}>
-        <a href="{{ url_for('.show_all') }}">Following</a>
+        <a href="{{ url_for('.show_following') }}">Following</a>
         </li>
         {% endif %}
     </ul>
