@@ -126,6 +126,15 @@ class User(UserMixin, db.Model):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(
                 self.email.encode('utf-8')).hexdigest()
+        self.follow(self)
+
+    @staticmethod
+    def add_self_follows():
+        for u in User.query.all():
+            if not u.is_following(u):
+                u.follow(u)
+                db.session.add(u)
+                db.session.commit()
 
     @staticmethod
     def generate_fake(count=100):
