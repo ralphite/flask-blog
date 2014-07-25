@@ -7,7 +7,7 @@ from ..models import User, Role, Permission, Post
 from ..email import send_email
 from . import main
 from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm
-from ..decorators import admin_required
+from ..decorators import admin_required, permission_required
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -98,3 +98,64 @@ def edit_post(post_id):
         return redirect('/post/'+str(p.id))
     form.body.data = p.body
     return render_template('edit_post.html', form=form)
+
+
+@main.route('/follow/<username>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def follow(username):
+    u = User.query.filter_by(username=username).first()
+    if u is None:
+        flash('Invalid user')
+        return redirect(url_for('.index'))
+    if current_user.is_following(u):
+        flash('Already following')
+        return redirect(url_for('.user', username=username))
+    current_user.follow(u)
+    flash('You are following %s.' % username)
+    return redirect(url_for('.user', username=username))
+
+
+@main.route('/unfollow/<username>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def unfollow(username):
+    u = User.query.filter_by(username=username).first()
+    if u is None:
+        flash('Invalid user')
+        return redirect(url_for('.index'))
+    if not current_user.is_following(u):
+        flash('Not following already')
+        return redirect(url_for('.user', username=username))
+    current_user.unfollow(u)
+    flash('You are now not following %s.' % username)
+    return redirect(url_for('.user', username=username))
+
+
+@main.route('/<username>/followers')
+def followers(username):
+    u = User.query.filter_by(username=username).first()
+    if u is None:
+        flash('Invalid user')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = u.followers.paginate(page, per_page=current_app.config['USERS_PER_PAGE'],
+                                      error_out=False)
+    follows = [{'user': item.follower, 'timestamp': item.timestamp} for item in pagination.items]
+    return render_template('follows.html', user=u, title='Followers of',
+                           endpoint='.followers', pagination=pagination,
+                           follows=follows)
+
+@main.route('/<username>/following')
+def following(username):
+    u = User.query.filter_by(username=username).first()
+    if u is None:
+        flash('Invalid user')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = u.followed.paginate(page, per_page=current_app.config['USERS_PER_PAGE'],
+                                     error_out=False)
+    follows = [{'user': i.followed, 'timestamp': i.timestamp} for i in pagination.items]
+    return render_template('follows.html', user=u, title='Following of',
+                           endpoint='.following', pagination=pagination,
+                           follows=follows)

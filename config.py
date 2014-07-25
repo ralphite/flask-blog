@@ -15,6 +15,7 @@ class Config:
     FLASK_BLOG_MAIL_SENDER = 'Flask Blog <ralph.wen@gmail.com>'
     FLASK_BLOG_ADMIN = os.environ.get('FLASK_BLOG_ADMIN') or 'ralph.wen@gmail.com'
     FLASK_BLOG_POSTS_PER_PAGE = os.environ.get('FLASK_BLOG_POSTS_PER_PAGE') or 10
+    USERS_PER_PAGE = os.environ.get('USERS_PER_PAGE') or 10
 
     @staticmethod
     def init_app(app):
