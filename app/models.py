@@ -29,7 +29,7 @@ class Post(db.Model):
         user_count = User.query.count()
         for i in range(count):
             u = User.query.offset(randint(0, user_count - 1)).first()
-            p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1,3)),
+            p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1, 3)),
                      timestamp=forgery_py.date.date(True),
                      author=u)
             db.session.add(p)
@@ -44,6 +44,7 @@ class Post(db.Model):
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True
         ))
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -158,6 +159,23 @@ class User(UserMixin, db.Model):
             except IntegrityError:
                 db.session.rollback()
 
+    @staticmethod
+    def generate_following():
+        from sqlalchemy.exc import IntegrityError
+        from random import seed, randint
+
+        seed()
+        user_count = User.query.count()
+        for u in User.query.all():
+            for i in range(user_count / 5):
+                u2 = User.query.offset(randint(0, user_count - 1)).first()
+                u.follow(u2)
+                db.session.add(u)
+                try:
+                    db.session.commit()
+                except IntegrityError:
+                    db.session.rollback()
+
     def gravatar(self, size=100, default='identicon', rating='g'):
         if request.is_secure:
             url = 'https://secure.gravatar.com/avatar'
@@ -261,12 +279,11 @@ class User(UserMixin, db.Model):
 
     @property
     def followed_posts(self):
-        return Post.query.join(Follow, Follow.followed_id==Post.author_id)\
-            .filter(Follow.follower_id==self.id)
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id) \
+            .filter(Follow.follower_id == self.id)
 
     def __repr__(self):
         return '<User %r>' % self.username
-
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -276,9 +293,11 @@ class AnonymousUser(AnonymousUserMixin):
     def is_administrator(self):
         return False
 
+
 login_manager.anonymous_user = AnonymousUser
 
 db.event.listen(Post.body, 'set', Post.on_change_body)
+
 
 @login_manager.user_loader
 def load_user(user_id):

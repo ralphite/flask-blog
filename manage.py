@@ -44,6 +44,7 @@ def recreate_data():
     db.session.commit()
     User.generate_fake(50)
     Post.generate_fake(500)
+    User.generate_following()
 
 
 if __name__ == '__main__':
