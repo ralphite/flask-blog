@@ -31,7 +31,8 @@ def index():
         error_out=False
     )
     posts = pagination.items
-    return render_template('index.html', form=form, posts=posts, pagination=pagination)
+    return render_template('index.html', form=form, posts=posts,
+                           pagination=pagination, show_followed=show_followed)
 
 
 @main.route('/post/all')
