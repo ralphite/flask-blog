@@ -4,10 +4,10 @@ from flask import render_template, session, redirect, url_for, current_app, \
 from flask_login import login_required, current_user
 
 from .. import db
-from ..models import User, Role, Permission, Post
+from ..models import User, Role, Permission, Post, Comment
 from ..email import send_email
 from . import main
-from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm
+from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from ..decorators import admin_required, permission_required
 
 
@@ -60,7 +60,7 @@ def user(username):
     return render_template('user.html', user=u, posts=posts)
 
 
-@main.route('/edit-profile', methods=['GET', 'POST'])
+@main.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm()
@@ -77,7 +77,7 @@ def edit_profile():
     return render_template('edit_profile.html', form=form)
 
 
-@main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
+@main.route('/profile/<int:id>/admin-edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_profile_admin(id):
@@ -104,13 +104,28 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form, user=u)
 
 
-@main.route('/post/<int:post_id>')
+@main.route('/post/<int:post_id>', methods=['GET', 'POST'])
 def post(post_id):
     p = Post.query.get_or_404(post_id)
-    return render_template('post.html', posts=[p])
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data,
+                          post=p,
+                          author=current_user._get_current_object())
+        db.session.add(comment)
+        flash('Comment published')
+        return redirect(url_for('.post', post_id=p.id, page=1))
+    page = request.args.get('page', 1, type=int)
+    pagination = p.comments.order_by(Comment.timestamp.desc()).paginate(
+        page, per_page=current_app.config['COMMENTS_PER_PAGE'],
+        error_out=False
+    )
+    comments = pagination.items
+    return render_template('post.html', posts=[p], form=form,
+                           comments=comments, pagination=pagination)
 
 
-@main.route('/edit-post/<int:post_id>', methods=["GET", "POST"])
+@main.route('/post/<int:post_id>/edit', methods=["GET", "POST"])
 @login_required
 def edit_post(post_id):
     p = Post.query.get_or_404(post_id)

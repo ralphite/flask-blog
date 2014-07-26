@@ -9,8 +9,8 @@ from wtforms.validators import DataRequired, Length, Email, Regexp, ValidationEr
 from ..models import User, Role
 
 
-class NameForm(Form):
-    name = StringField("Your name?", validators=[DataRequired()])
+class CommentForm(Form):
+    body = StringField("", validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 
