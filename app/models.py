@@ -65,6 +65,27 @@ class Comment(db.Model):
             tags=allowed_tags, strip=True
         ))
 
+    @staticmethod
+    def generate_comments():
+        from sqlalchemy.exc import IntegrityError
+        from random import seed, randint
+        import forgery_py
+
+        seed()
+        user_count = User.query.count()
+        for p in Post.query.all():
+            for i in range(randint(0, 10)):
+                comment = Comment(body=forgery_py.lorem_ipsum.sentences(randint(1, 3)),
+                                  timestamp=forgery_py.date.date(True),
+                                  disabled=False,
+                                  author_id=User.query.offset(randint(0, user_count - 1)).first().id,
+                                  post_id=p.id)
+                db.session.add(comment)
+                try:
+                    db.session.commit()
+                except IntegrityError:
+                    db.session.rollback()
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -77,9 +98,9 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User': (Permission.FOLLOW | Permission.COMMENT | \
+            'User': (Permission.FOLLOW | Permission.COMMENT |
                      Permission.WRITE_ARTICLES, True),
-            'Moderator': (Permission.FOLLOW | Permission.COMMENT | \
+            'Moderator': (Permission.FOLLOW | Permission.COMMENT |
                           Permission.WRITE_ARTICLES | Permission.MODERATE_COMMENTS, False),
             'Administrator': (0xff, False)
         }
@@ -109,6 +130,9 @@ class Permission:
     WRITE_ARTICLES = 0x04
     MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
+
+    def __init__(self):
+        pass
 
 
 class User(UserMixin, db.Model):
@@ -319,6 +343,7 @@ login_manager.anonymous_user = AnonymousUser
 
 db.event.listen(Post.body, 'set', Post.on_change_body)
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+
 
 @login_manager.user_loader
 def load_user(user_id):
