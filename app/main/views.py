@@ -1,11 +1,10 @@
-from flask import render_template, session, redirect, url_for, current_app, \
+from flask import render_template, redirect, url_for, current_app, \
     abort, flash, request, make_response
 
 from flask_login import login_required, current_user
 
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
-from ..email import send_email
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from ..decorators import admin_required, permission_required
@@ -180,9 +179,11 @@ def followers(username):
         flash('Invalid user')
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
-    pagination = u.followers.paginate(page, per_page=current_app.config['USERS_PER_PAGE'],
+    pagination = u.followers.paginate(page,
+                                      per_page=current_app.config['USERS_PER_PAGE'],
                                       error_out=False)
-    follows = [{'user': item.follower, 'timestamp': item.timestamp} for item in pagination.items]
+    follows = [{'user': item.follower, 'timestamp': item.timestamp}
+               for item in pagination.items]
     return render_template('follows.html', user=u, title='Followers of',
                            endpoint='.followers', pagination=pagination,
                            follows=follows)

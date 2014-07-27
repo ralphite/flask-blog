@@ -108,8 +108,8 @@ def password_reset_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             token = user.generate_reset_token()
-            send_email(user.email, 'Reset password', 'auth/email/reset_password', user=user,
-                       token=token, next=request.args.get('next'))
+            send_email(user.email, 'Reset password', 'auth/email/reset_password',
+                       user=user, token=token, next=request.args.get('next'))
             flash('Email for resetting password has been sent to you')
             return redirect(url_for('auth.login'))
         else:
