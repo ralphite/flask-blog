@@ -15,6 +15,10 @@ def unauthorized(message):
     return forbidden(message)
 
 
+def bad_request(message):
+    return forbidden(message)
+
+
 @api.errorhandler(ValidationError)
 def validation_error(e):
     return bad_request(e.args[0])
