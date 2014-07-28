@@ -13,8 +13,8 @@ migrate = Migrate(app, db)
 
 
 def make_shell_context():
-    return dict(app=app, db=db, User=User, Role=Role, Permission=Permission, Post=Post,
-                Follow=Follow, Comment=Comment)
+    return dict(app=app, db=db, User=User, Role=Role, Permission=Permission,
+                Post=Post, Follow=Follow, Comment=Comment)
 
 
 manager.add_command("shell", Shell(make_context=make_shell_context))
@@ -31,6 +31,7 @@ def test():
 
 @manager.command
 def recreate_data():
+    """Generate fake data for development and testing"""
     print 'dropping existing tables...'
     db.drop_all()
     print 'creating tables...'
