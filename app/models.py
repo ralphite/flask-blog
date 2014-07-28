@@ -10,6 +10,7 @@ from flask_login import UserMixin, AnonymousUserMixin
 
 from . import db
 from . import login_manager
+from exceptions import ValidationError
 
 
 class Permission:
@@ -290,10 +291,6 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_administrator(self):
         return False
-
-
-class ValidationError(ValueError):
-    pass
 
 
 class Post(db.Model):
