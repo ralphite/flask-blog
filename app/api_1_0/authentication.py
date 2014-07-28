@@ -29,7 +29,7 @@ def verify_password(email_or_token, password):
 
 @auth.error_handler
 def auth_error():
-    return forbidden('Invalid credentials')
+    return unauthorized('Invalid credentials')
 
 
 @api.before_request
@@ -39,7 +39,8 @@ def before_request():
             not g.current_user.confirmed:
         return forbidden('Unconfirmed account.')
 
-@api.route('/route')
+
+@api.route('/token')
 def get_token():
     if g.current_user.is_anonymous() or g.token_used:
         return unauthorized('Invalid credentials.')

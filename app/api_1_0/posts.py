@@ -32,7 +32,6 @@ def get_posts():
 
 
 @api.route('/posts/<int:id>')
-@auth.login__required
 def get_post(id):
     post = Post.query.get_or_404(id)
     return jsonify(post.to_json())
