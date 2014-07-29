@@ -2,14 +2,12 @@ __author__ = 'yawen'
 
 from .import api
 from ..import db
-from ..auth import auth
 from .errors import forbidden
 from ..models import Post, Permission
 from decorators import permission_required
 from flask import jsonify, request, url_for, g, current_app
 
 @api.route('/posts/')
-@auth.login_required
 def get_posts():
     page = request.args.get('page', 1, type=int)
     pagination = Post.query.paginate(
