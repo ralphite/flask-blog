@@ -7,6 +7,7 @@ from ..models import Post, Permission
 from decorators import permission_required
 from flask import jsonify, request, url_for, g, current_app
 
+
 @api.route('/posts/')
 def get_posts():
     page = request.args.get('page', 1, type=int)
@@ -43,7 +44,7 @@ def new_post():
     db.session.add(post)
     db.session.commit()
     return jsonify(post.to_json()), 201, {
-        'location': url_for('api.get_post', id=post.id, _external=True)
+        'location': url_for('api.get_post', id=post.id, _external=True),
     }
 
 
