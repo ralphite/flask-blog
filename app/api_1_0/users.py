@@ -36,7 +36,7 @@ def get_user_posts(user_id):
     })
 
 
-@api.route('/users/<int:user_id>/posts/following')
+@api.route('/users/<int:user_id>/posts/following/')
 def get_user_following_posts(user_id):
     u = User.query.get_or_404(user_id)
     page = request.args.get('page', 1, type=int)

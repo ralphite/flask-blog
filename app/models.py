@@ -150,13 +150,13 @@ class User(UserMixin, db.Model):
 
     def to_json(self):
         json_user = {
-            'url': url_for('api.get_post', id=self.id, _external=True),
+            'url': url_for('api.get_user', user_id=self.id, _external=True),
             'username': self.username,
             'member_since': self.member_since,
             'last_seen': self.last_seen,
-            'posts': url_for('api.get_user_posts', id=self.id, _external=True),
-            'followed_posts': url_for('api.get_user_followed_posts',
-                                      id=self.id, _external=True),
+            'posts': url_for('api.get_user_posts', user_id=self.id, _external=True),
+            'followed_posts': url_for('api.get_user_following_posts',
+                                      user_id=self.id, _external=True),
             'post_count': self.posts.count()
         }
         return json_user
@@ -333,8 +333,8 @@ class Post(db.Model):
             'body': self.body,
             'body_html': self.body_html,
             'timestamp': self.timestamp,
-            'author': url_for('api.get_user', id=self.id, _external=True),
-            'comments': url_for('api.get_post_comments', id=self.id,
+            'author': url_for('api.get_user', user_id=self.id, _external=True),
+            'comments': url_for('api.get_post_comments', post_id=self.id,
                                 _external=True),
             'comment_count': self.comments.count()
         }
@@ -389,12 +389,12 @@ class Comment(db.Model):
 
     def to_json(self):
         json_comment = {
-            'url': url_for('api.get_comment', id=self.id, _external=True),
+            'url': url_for('api.get_comment', comment_id=self.id, _external=True),
             'post': url_for('api.get_post', id=self.post_id, _external=True),
             'body': self.body,
             'body_html': self.body_html,
             'timestamp': self.timestamp,
-            'author': url_for('api.get_user', id=self.author_id, _external=True)
+            'author': url_for('api.get_user', user_id=self.author_id, _external=True)
         }
         return json_comment
 

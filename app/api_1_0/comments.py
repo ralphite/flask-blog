@@ -23,14 +23,14 @@ def get_comments():
     if pagination.has_next:
         next = url_for('api.get_comments', page=page+1, _external=True)
     return jsonify({
-        'comments': [c.to_json for c in comments],
+        'comments': [c.to_json() for c in comments],
         'prev': prev,
         'next': next,
         'count': pagination.total
     })
 
 
-@api.route('/comment/<int:comment_id>')
+@api.route('/comments/<int:comment_id>')
 def get_comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     return jsonify(comment.to_json())
@@ -52,7 +52,7 @@ def get_post_comments(post_id):
     if pagination.has_next:
         next = url_for('api.get_comments', page=page+1, _external=True)
     return jsonify({
-        'comments': [c.to_json for c in comments],
+        'comments': [c.to_json() for c in comments],
         'prev': prev,
         'next': next,
         'count': pagination.total
