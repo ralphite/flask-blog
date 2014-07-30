@@ -17,6 +17,8 @@ class Config:
     FLASK_BLOG_POSTS_PER_PAGE = os.environ.get('FLASK_BLOG_POSTS_PER_PAGE') or 10
     USERS_PER_PAGE = os.environ.get('USERS_PER_PAGE') or 10
     COMMENTS_PER_PAGE = os.environ.get('COMMENTS_PER_PAGE') or 10
+    SLOW_DB_QUERY_TIME = os.environ.get('SLOW_DB_QUERY_TIME') or 0.5
+    SQLALCHEMY_RECORD_QUERIES = True
 
     @staticmethod
     def init_app(app):
