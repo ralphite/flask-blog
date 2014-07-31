@@ -255,15 +255,15 @@ def server_shutdown():
     shutdown()
     return 'Shutting down...'
 
-'''
+
 @main.after_app_request
 def after_request(resp):
     for query in get_debug_queries():
-        print query.get('duration')
-        #if query.duration >= current_app.config['SLOW_DB_QUERY_TIME']:
-            #current_app.logger.warning(
-            #    'Slow query: %s\nParameters: %s\nDuration, %fs\nContext: %s\n' %
-            #    (query.statement, query.parameters, query.duration, query.contenxt)
-            #)
-    return resp'''
+        #print query.duration
+        if query.duration >= current_app.config['SLOW_DB_QUERY_TIME']:
+            current_app.logger.warning(
+                'Slow query: %s\nParameters: %s\nDuration, %fs\nContext: %s\n' %
+                (query.statement, query.parameters, query.duration, query.contenxt)
+            )
+    return resp
 
