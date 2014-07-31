@@ -263,7 +263,7 @@ def after_request(resp):
         if query.duration >= current_app.config['SLOW_DB_QUERY_TIME']:
             current_app.logger.warning(
                 'Slow query: %s\nParameters: %s\nDuration, %fs\nContext: %s\n' %
-                (query.statement, query.parameters, query.duration, query.contenxt)
+                (query.statement, query.parameters, query.duration, query.context)
             )
     return resp
 
