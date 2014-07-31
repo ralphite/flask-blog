@@ -19,6 +19,7 @@ class Config:
     COMMENTS_PER_PAGE = os.environ.get('COMMENTS_PER_PAGE') or 10
     SLOW_DB_QUERY_TIME = os.environ.get('SLOW_DB_QUERY_TIME') or 0.5
     SQLALCHEMY_RECORD_QUERIES = True
+    SSL_DISABLED = True
 
     @staticmethod
     def init_app(app):
@@ -68,6 +69,8 @@ class ProductionConfig(Config):
 
 
 class HerokuConfig(ProductionConfig):
+    SSL_DISABLED = bool(os.environ.get('SSL_DISABLED'))
+
     @classmethod
     def init_app(cls, app):
         ProductionConfig.init_app(app)
@@ -77,6 +80,22 @@ class HerokuConfig(ProductionConfig):
         file_handler = StreamHandler()
         file_handler.setLevel(logging.WARNING)
         app.logger.addHandler(file_handler)
+
+        # handle proxy server headers
+        from werkzeug.contrib.fixers import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app)
+
+
+class UnixConfig(ProductionConfig):
+    @classmethod
+    def init_app(cls, app):
+        ProductionConfig.init_app(app)
+
+        import logging
+        from logging.handlers import SysLogHandler
+        syslog_handler = SysLogHandler()
+        syslog_handler.setLevel(logging.WARNING)
+        app.logger.addHandler(syslog_handler)
 
 
 config = {

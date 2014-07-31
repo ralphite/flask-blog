@@ -13,6 +13,13 @@ if os.environ.get('FLASK_BLOG_COVERAGE'):
     COV = coverage.coverage(branch=True, include='app/*')
     COV.start()
 
+if os.path.exists('.env'):
+    print 'Importing env vars from .env'
+    for l in open('.env'):
+        var = l.strip().split('=')
+        if len(var) == 2:
+            os.environ[var[0]] = var[1]
+
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
 migrate = Migrate(app, db)
