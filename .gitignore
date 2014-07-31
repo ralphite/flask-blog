@@ -4,3 +4,4 @@ venv/
 tmp/
 .idea/
 *.sqlite
+.env
